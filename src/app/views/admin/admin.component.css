@@ -1,0 +1,16 @@
+.container {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .container > * {
+    width: 100%;
+  }
+
+  .submit{
+    display: flex;
+    width: 6rem!important;
+    justify-content:center;
+    text-align: center;
+    align-items: center;
+  }
