@@ -1,6 +1,9 @@
 import { Component, OnInit , ViewChild,AfterViewInit} from '@angular/core';
 import {SelectionModel} from '@angular/cdk/collections';
 import {MatPaginator, MatTableDataSource} from '@angular/material';
+import readXlsxFile from 'read-excel-file';
+import { Currency } from 'src/app/models/currency';
+import {CurrencyService } from '../../services/currency.service';
 
 export interface PeriodicElement {
   name: string;
@@ -30,7 +33,7 @@ export class HomeComponent implements OnInit {
   selection = new SelectionModel<PeriodicElement>(true, []);
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
-  constructor() { }
+  constructor(private currencyService: CurrencyService) { }
 
   ngOnInit() {
     setTimeout(() => this.dataSource.paginator = this.paginator);
@@ -82,5 +85,36 @@ ngAfterViewInit() {
   this.paginator.page.subscribe(
      (event) => console.log("..............@@@@@@@@@@@@@@@@@@@@@@@@..................",event.pageSize)
 );
+  }
+
+  upload($event){
+    
+    readXlsxFile($event.target.files[0]).then((rows) => {
+      // `rows` is an array of rows
+      // each row being an array of cells.
+      console.log("....................@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@",rows);
+      //confirm header first
+      console.log("^^^^^^^^^^^",rows[0][1]);
+      if(rows[0][0]=='date' && rows[0][1] == 'fromCurrency' && rows[0][2] =='toCurrency' && rows[0][3] =='conversionRate' ){
+
+        rows.forEach(element => {
+          console.log("rows.....",element[0]);
+          if(element[0]=='date'){
+
+          }else{
+
+            console.log("$$$$$$$$$$$$",new Date(element[0]));
+            let currency = new Currency(new Date(element[0]),element[1],element[2],element[3], 'system');
+            this.currencyService.addCurrency(currency);
+          }
+          // element.forEach(element => {
+          //   console.log("coulumn...",element);
+
+          // });
+        });
+      }else{
+        confirm("Header should be :: date fromCurrency toCurrency conversionRate")
+      }
+    })
   }
 }
